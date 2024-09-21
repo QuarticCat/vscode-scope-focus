@@ -1,0 +1,48 @@
+{
+  "name": "scope-focus",
+  "displayName": "Scope Focus",
+  "description": "Yet another implementation of IntelliJ's scopes",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "scope-focus.selectScope",
+        "title": "Select Scope"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "esbuild": "^0.23.1",
+    "eslint": "^9.9.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.5.4"
+  },
+  "prettier": {
+    "printWidth": 120
+  }
+}
