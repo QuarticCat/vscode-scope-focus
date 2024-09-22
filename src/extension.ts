@@ -1,8 +1,50 @@
 import * as vscode from "vscode";
 
-export function activate(context: vscode.ExtensionContext) {
-  // let channel = vscode.window.createOutputChannel("Scope Focus");
+interface Scope {
+  include: string[];
+  exclude: string[];
+}
 
+interface Scopes {
+  [name: string]: Scope;
+}
+
+async function calcExclude({ include, exclude }: Scope): Promise<object> {
+  // TODO
+  return {};
+}
+
+// Update status bar and `files.exclude` according to current settings.
+async function updateScope(status: vscode.StatusBarItem) {
+  const scopeConfig = vscode.workspace.getConfiguration("scope-focus");
+  const filesConfig = vscode.workspace.getConfiguration("files");
+
+  const activeScope = scopeConfig.get<string | null>("activeScope") ?? null;
+  const scopes = scopeConfig.get<Scopes>("scopes") ?? {};
+
+  if (activeScope === null) {
+    status.text = `$(list-tree) No Scope`;
+    status.backgroundColor = undefined;
+    filesConfig.update("exclude", {});
+  } else if (!(activeScope in scopes)) {
+    status.text = `$(list-tree) Unknown`;
+    status.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+    vscode.window.showErrorMessage(`Unknown scope: ${activeScope}`);
+    filesConfig.update("exclude", {});
+  } else {
+    status.text = `$(list-tree) ${activeScope}`;
+    status.backgroundColor = undefined;
+    filesConfig.update("exclude", await calcExclude(scopes[activeScope]));
+  }
+
+  if (Object.keys(scopes).length === 0) {
+    status.hide();
+  } else {
+    status.show();
+  }
+}
+
+export function activate(context: vscode.ExtensionContext) {
   // Create status bar item.
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
   status.name = "Switch Scope";
@@ -25,8 +67,17 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  status.text = `$(list-tree) No Scope`;
-  status.show();
+  // Listen on configuration changes.
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration("scope-focus")) {
+        updateScope(status);
+      }
+    })
+  );
+
+  // Initialize.
+  updateScope(status);
 }
 
 export function deactivate() {

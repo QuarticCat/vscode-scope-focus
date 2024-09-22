@@ -34,12 +34,7 @@
         },
         "scope-focus.scopes": {
           "type": "object",
-          "default": {
-            "Scope Name": {
-              "include": [],
-              "exclude": []
-            }
-          },
+          "default": {},
           "description": "Scope definitions.",
           "additionalProperties": {
             "type": "object",

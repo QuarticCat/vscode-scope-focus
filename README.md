@@ -6,12 +6,29 @@ You can consider it as a workaround of [vscode#869](https://github.com/microsoft
 
 ## Features
 
-TODO
+- Create scopes.
+- Switch between them.
 
 ## Extension Settings
 
-- `scope-focus.activeScope`: Switch active scope. You can do this on status bar as well.
-- `scope-focus.scopes`: Define scopes. Hover on settings to see detailed descriptions.
+These settings should go to workspace-level, i.e., `.vscode/settings.json`.
+
+- `scope-focus.activeScope`: Switch active scope. You can operate this on status bar as well.
+- `scope-focus.scopes`: Define scopes. Hover on settings to see details.
+
+Taking [llvm-project](https://github.com/llvm/llvm-project) as an example. If you want to focus on `clang` and `llvm` and exclude `cmake` sub-folders, you can configure like this:
+
+```json
+{
+    "scope-focus.activeScope": "Clang",
+    "scope-focus.scopes": {
+        "Clang": {
+            "include": ["clang", "llvm"],
+            "exclude": ["*/cmake"]
+        }
+    }
+}
+```
 
 ## Known Issues
 
