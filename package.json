@@ -16,10 +16,54 @@
   "contributes": {
     "commands": [
       {
-        "command": "scope-focus.selectScope",
-        "title": "Select Scope"
+        "command": "scope-focus.switchScope",
+        "title": "Switch Scope",
+        "category": "Scope Focus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Scope Focus",
+      "properties": {
+        "scope-focus.activeScope": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null,
+          "markdownDescription": "Scope currently in use. Set to `null` to turn off."
+        },
+        "scope-focus.scopes": {
+          "type": "object",
+          "default": {
+            "Scope Name": {
+              "include": [],
+              "exclude": []
+            }
+          },
+          "description": "Scope definitions.",
+          "additionalProperties": {
+            "type": "object",
+            "description": "A scope definition.",
+            "properties": {
+              "include": {
+                "type": "array",
+                "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to include.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exclude": {
+                "type": "array",
+                "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to exclude.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",

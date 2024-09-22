@@ -1,28 +1,36 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "scope-focus" is now active!');
+  // let channel = vscode.window.createOutputChannel("Scope Focus");
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const disposable = vscode.commands.registerCommand(
-    "scope-focus.helloWorld",
-    () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      vscode.window.showInformationMessage("Hello World from Scope Focus!");
-    }
+  // Create status bar item.
+  const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+  status.name = "Switch Scope";
+  status.tooltip = "Switch Scope";
+  status.command = "scope-focus.switchScope";
+  context.subscriptions.push(status);
+
+  // Register commands.
+  context.subscriptions.push(
+    vscode.commands.registerCommand("scope-focus.switchScope", async () => {
+      const config = vscode.workspace.getConfiguration("scope-focus");
+      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes") ?? {})];
+      const selected = await vscode.window.showQuickPick(scopes, {
+        title: "Switch Scope",
+        placeHolder: "Select a scope to switch to",
+      });
+      if (typeof selected === "string") {
+        config.update("activeScope", selected === "No Scope" ? null : selected);
+      }
+    })
   );
 
-  context.subscriptions.push(disposable);
+  status.text = `$(list-tree) No Scope`;
+  status.show();
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+  // Reset `files.exclude`.
+  const filesConfig = vscode.workspace.getConfiguration("files");
+  filesConfig.update("exclude", {});
+}
