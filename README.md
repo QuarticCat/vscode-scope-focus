@@ -42,6 +42,10 @@ Taking [llvm-project](https://github.com/llvm/llvm-project) as an example. If yo
 
 ## Release Notes
 
+### 0.1.1
+
+Avoid creating `.vscode/settings.json`.
+
 ### 0.1.0
 
 Basic implementation.

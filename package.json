@@ -2,7 +2,7 @@
   "name": "scope-focus",
   "displayName": "Scope Focus",
   "description": "Yet another implementation of IntelliJ's scopes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "QuarticCat",
   "license": "MIT",
   "repository": {
