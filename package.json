@@ -3,6 +3,12 @@
   "displayName": "Scope Focus",
   "description": "Yet another implementation of IntelliJ's scopes",
   "version": "0.1.0",
+  "publisher": "QuarticCat",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QuarticCat/vscode-scope-focus"
+  },
   "engines": {
     "vscode": "^1.93.0"
   },
