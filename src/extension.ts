@@ -12,12 +12,17 @@ interface Scopes {
   [name: string]: Scope;
 }
 
-// Check existence of `.vscode/settings.json`.
+/**
+ * Check existence of `.vscode/settings.json`.
+ */
 function configExists(): boolean {
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   return cwd !== undefined && fs.existsSync(path.join(cwd, ".vscode", "settings.json"));
 }
 
+/**
+ * Derive `files.exclude` setting from scope definition.
+ */
 async function calcExclude({ include, exclude }: Scope): Promise<object> {
   // Convert to exclude paths.
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
@@ -41,7 +46,9 @@ async function calcExclude({ include, exclude }: Scope): Promise<object> {
   return setting;
 }
 
-// Update status bar and `files.exclude` according to current settings.
+/**
+ * Update status bar and `files.exclude` according to current settings.
+ */
 async function updateScope(status: vscode.StatusBarItem) {
   const scopeConfig = vscode.workspace.getConfiguration("scope-focus");
   const filesConfig = vscode.workspace.getConfiguration("files");

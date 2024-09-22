@@ -1,13 +1,13 @@
 # Scope Focus
 
-When you work on a large repo, it's often desired to focus on a subset of files. This extension lets you switch between predefined subsets (called "scopes") and hide rest files. It aims to provide a similar experience to IntelliJ's [scopes](https://www.jetbrains.com/help/idea/settings-scopes.html).
+When working on a large repo, it's often desired to focus on a subset of files. This extension lets you switch among predefined subsets (called "scopes") and hide rest files. It aims to provide a similar experience to IntelliJ's [scopes](https://www.jetbrains.com/help/idea/settings-scopes.html).
 
 You can consider it as a workaround of [vscode#869](https://github.com/microsoft/vscode/issues/869).
 
 ## Features
 
 - Create scopes.
-- Switch between them.
+- Switch among them.
 
 ## Extension Settings
 

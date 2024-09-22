@@ -1,7 +1,7 @@
 {
   "name": "scope-focus",
   "displayName": "Scope Focus",
-  "description": "Yet another implementation of IntelliJ's scopes",
+  "description": "Focus on a subset of files",
   "version": "0.1.1",
   "publisher": "QuarticCat",
   "license": "MIT",
