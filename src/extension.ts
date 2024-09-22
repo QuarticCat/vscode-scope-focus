@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { glob } from "glob";
 import * as path from "path";
+import * as fs from "fs";
 
 interface Scope {
   include: string[];
@@ -11,9 +12,15 @@ interface Scopes {
   [name: string]: Scope;
 }
 
+// Check existence of `.vscode/settings.json`.
+function configExists(): boolean {
+  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  return cwd !== undefined && fs.existsSync(path.join(cwd, ".vscode", "settings.json"));
+}
+
 async function calcExclude({ include, exclude }: Scope): Promise<object> {
   // Convert to exclude paths.
-  const cwd = vscode.workspace.rootPath;
+  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const includePaths = await glob(include, { cwd });
   const includeGlobs: Set<string> = new Set();
   const excludeGlobs: Set<string> = new Set();
@@ -39,18 +46,22 @@ async function updateScope(status: vscode.StatusBarItem) {
   const scopeConfig = vscode.workspace.getConfiguration("scope-focus");
   const filesConfig = vscode.workspace.getConfiguration("files");
 
-  const activeScope = scopeConfig.get<string | null>("activeScope") ?? null;
-  const scopes = scopeConfig.get<Scopes>("scopes") ?? {};
+  const activeScope = scopeConfig.get<string | null>("activeScope", null);
+  const scopes = scopeConfig.get<Scopes>("scopes", {});
 
   if (activeScope === null) {
     status.text = `$(list-tree) No Scope`;
     status.backgroundColor = undefined;
-    filesConfig.update("exclude", {});
+    if (configExists()) {
+      filesConfig.update("exclude", undefined);
+    }
   } else if (!(activeScope in scopes)) {
     status.text = `$(list-tree) Unknown`;
     status.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
     vscode.window.showErrorMessage(`Unknown scope: ${activeScope}`);
-    filesConfig.update("exclude", {});
+    if (configExists()) {
+      filesConfig.update("exclude", undefined);
+    }
   } else {
     status.text = `$(list-tree) ${activeScope}`;
     status.backgroundColor = undefined;
@@ -76,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("scope-focus.switchScope", async () => {
       const config = vscode.workspace.getConfiguration("scope-focus");
-      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes") ?? {})];
+      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes", {}))];
       const selected = await vscode.window.showQuickPick(scopes, {
         title: "Switch Scope",
         placeHolder: "Select a scope to switch to",
@@ -103,5 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   // Reset `files.exclude`.
   const filesConfig = vscode.workspace.getConfiguration("files");
-  filesConfig.update("exclude", {});
+  if (configExists()) {
+    filesConfig.update("exclude", undefined);
+  }
 }
