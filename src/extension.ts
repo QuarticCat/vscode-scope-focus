@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import { glob } from "glob";
+import * as path from "path";
 
 interface Scope {
   include: string[];
@@ -10,8 +12,26 @@ interface Scopes {
 }
 
 async function calcExclude({ include, exclude }: Scope): Promise<object> {
-  // TODO
-  return {};
+  // Convert to exclude paths.
+  const cwd = vscode.workspace.rootPath;
+  const includePaths = await glob(include, { cwd });
+  const includeGlobs: Set<string> = new Set();
+  const excludeGlobs: Set<string> = new Set();
+  for (let entry of includePaths) {
+    while (entry !== ".") {
+      includeGlobs.add(entry);
+      entry = path.dirname(entry);
+      excludeGlobs.add(path.join(entry, "*"));
+    }
+  }
+  const excludePaths = await glob([...excludeGlobs], { cwd, dot: true, ignore: [...includeGlobs] });
+
+  // Convert to valid `files.exclude` setting.
+  const setting: { [entry: string]: boolean } = {};
+  for (const entry of [...excludePaths, ...exclude]) {
+    setting[entry] = true;
+  }
+  return setting;
 }
 
 // Update status bar and `files.exclude` according to current settings.
