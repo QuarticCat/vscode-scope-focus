@@ -118,10 +118,4 @@ export function activate(context: vscode.ExtensionContext) {
   updateScope(status);
 }
 
-export function deactivate() {
-  // Reset `files.exclude`.
-  const filesConfig = vscode.workspace.getConfiguration("files");
-  if (configExists()) {
-    filesConfig.update("exclude", undefined);
-  }
-}
+export function deactivate() {}
