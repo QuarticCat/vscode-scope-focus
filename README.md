@@ -11,10 +11,12 @@ You can consider it as a workaround of [vscode#869](https://github.com/microsoft
 
 ## Extension Settings
 
-These settings should go to workspace-level, i.e., `.vscode/settings.json`.
+### Workspace Settings
 
 - `scope-focus.activeScope`: Switch active scope. You can operate this on **status bar** as well.
 - `scope-focus.scopes`: Define scopes. Hover on settings to see details.
+
+### Examples
 
 Taking [llvm-project](https://github.com/llvm/llvm-project) as an example. If you want to focus on `clang` and `llvm` and then exclude `cmake` sub-folders, you can configure like this:
 

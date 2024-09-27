@@ -1,78 +1,25 @@
 import * as vscode from "vscode";
-import { glob } from "glob";
-import * as path from "path";
-import * as fs from "fs";
+import { Scopes } from "./config";
+import { unsetFileScope, setFileScope } from "./file";
 
-interface Scope {
-  include: string[];
-  exclude: string[];
-}
-
-interface Scopes {
-  [name: string]: Scope;
-}
-
-/**
- * Check existence of `.vscode/settings.json`.
- */
-function configExists(): boolean {
-  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  return !!cwd && fs.existsSync(path.join(cwd, ".vscode", "settings.json"));
-}
-
-/**
- * Derive `files.exclude` setting from scope definition.
- */
-async function deriveFilesExclude({ include, exclude }: Scope): Promise<object> {
-  // Convert to exclude paths.
-  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  const includePaths = await glob(include, { cwd });
-  const includeGlobs: Set<string> = new Set();
-  const excludeGlobs: Set<string> = new Set();
-  for (let entry of includePaths) {
-    while (entry !== ".") {
-      includeGlobs.add(entry);
-      entry = path.dirname(entry);
-      excludeGlobs.add(path.join(entry, "*"));
-    }
-  }
-  const excludePaths = await glob(Array.from(excludeGlobs), { cwd, dot: true, ignore: Array.from(includeGlobs) });
-
-  // Convert to valid `files.exclude` setting.
-  const setting: { [entry: string]: boolean } = Object.create(null);
-  for (const entry of [...excludePaths, ...exclude]) {
-    setting[entry] = true;
-  }
-  return setting;
-}
-
-/**
- * Update status bar and `files.exclude` according to current settings.
- */
 async function updateScope(status: vscode.StatusBarItem) {
-  const scopeConfig = vscode.workspace.getConfiguration("scope-focus");
-  const filesConfig = vscode.workspace.getConfiguration("files");
-
-  const activeScope = scopeConfig.get<string | null>("activeScope", null);
-  const scopes = scopeConfig.get<Scopes>("scopes")!;
+  const config = vscode.workspace.getConfiguration("scope-focus");
+  const activeScope = config.get<string | null>("activeScope", null);
+  const scopes = config.get<Scopes>("scopes")!;
 
   if (activeScope === null) {
     status.text = `$(list-tree) No Scope`;
     status.backgroundColor = undefined;
-    if (configExists()) {
-      filesConfig.update("exclude", undefined);
-    }
+    unsetFileScope();
   } else if (!(activeScope in scopes)) {
     status.text = `$(list-tree) Unknown`;
     status.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
     vscode.window.showErrorMessage(`Unknown scope: ${activeScope}`);
-    if (configExists()) {
-      filesConfig.update("exclude", undefined);
-    }
+    unsetFileScope();
   } else {
     status.text = `$(list-tree) ${activeScope}`;
     status.backgroundColor = undefined;
-    filesConfig.update("exclude", await deriveFilesExclude(scopes[activeScope]));
+    setFileScope(scopes[activeScope]);
   }
 
   if (Object.keys(scopes).length === 0) {
