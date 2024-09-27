@@ -17,13 +17,13 @@ interface Scopes {
  */
 function configExists(): boolean {
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  return cwd !== undefined && fs.existsSync(path.join(cwd, ".vscode", "settings.json"));
+  return !!cwd && fs.existsSync(path.join(cwd, ".vscode", "settings.json"));
 }
 
 /**
  * Derive `files.exclude` setting from scope definition.
  */
-async function calcExclude({ include, exclude }: Scope): Promise<object> {
+async function deriveFilesExclude({ include, exclude }: Scope): Promise<object> {
   // Convert to exclude paths.
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const includePaths = await glob(include, { cwd });
@@ -36,10 +36,10 @@ async function calcExclude({ include, exclude }: Scope): Promise<object> {
       excludeGlobs.add(path.join(entry, "*"));
     }
   }
-  const excludePaths = await glob([...excludeGlobs], { cwd, dot: true, ignore: [...includeGlobs] });
+  const excludePaths = await glob(Array.from(excludeGlobs), { cwd, dot: true, ignore: Array.from(includeGlobs) });
 
   // Convert to valid `files.exclude` setting.
-  const setting: { [entry: string]: boolean } = {};
+  const setting: { [entry: string]: boolean } = Object.create(null);
   for (const entry of [...excludePaths, ...exclude]) {
     setting[entry] = true;
   }
@@ -54,7 +54,7 @@ async function updateScope(status: vscode.StatusBarItem) {
   const filesConfig = vscode.workspace.getConfiguration("files");
 
   const activeScope = scopeConfig.get<string | null>("activeScope", null);
-  const scopes = scopeConfig.get<Scopes>("scopes", {});
+  const scopes = scopeConfig.get<Scopes>("scopes")!;
 
   if (activeScope === null) {
     status.text = `$(list-tree) No Scope`;
@@ -72,7 +72,7 @@ async function updateScope(status: vscode.StatusBarItem) {
   } else {
     status.text = `$(list-tree) ${activeScope}`;
     status.backgroundColor = undefined;
-    filesConfig.update("exclude", await calcExclude(scopes[activeScope]));
+    filesConfig.update("exclude", await deriveFilesExclude(scopes[activeScope]));
   }
 
   if (Object.keys(scopes).length === 0) {
@@ -94,12 +94,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("scope-focus.switchScope", async () => {
       const config = vscode.workspace.getConfiguration("scope-focus");
-      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes", {}))];
+      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes")!)];
       const selected = await vscode.window.showQuickPick(scopes, {
         title: "Switch Scope",
         placeHolder: "Select a scope to switch to",
       });
-      if (typeof selected === "string") {
+      if (selected) {
         config.update("activeScope", selected === "No Scope" ? null : selected);
       }
     })
