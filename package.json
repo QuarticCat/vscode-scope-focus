@@ -30,14 +30,6 @@
     "configuration": {
       "title": "Scope Focus",
       "properties": {
-        "scope-focus.activeScope": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "default": null,
-          "markdownDescription": "Scope currently in use. Set to `null` to turn off."
-        },
         "scope-focus.scopes": {
           "type": "object",
           "default": {},

@@ -1,15 +1,11 @@
 import * as vscode from "vscode";
 import { glob } from "glob";
 import * as path from "path";
-import * as fs from "fs";
 import { Scope } from "./config";
 
 export function unsetFileScope() {
-  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  if (!!cwd && fs.existsSync(path.join(cwd, ".vscode", "settings.json"))) {
-    const config = vscode.workspace.getConfiguration("files");
-    config.update("exclude", undefined);
-  }
+  const config = vscode.workspace.getConfiguration("files");
+  config.update("exclude", undefined);
 }
 
 export async function setFileScope({ include, exclude }: Scope) {

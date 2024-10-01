@@ -1,25 +1,32 @@
 import * as vscode from "vscode";
 import { Scopes } from "./config";
 import { unsetFileScope, setFileScope } from "./file";
+import { unsetGitScope, setGitScope } from "./git";
 
-async function updateScope(status: vscode.StatusBarItem) {
+let activeScope: string | null = null;
+
+async function updateScope(status: vscode.StatusBarItem, init: boolean = false) {
   const config = vscode.workspace.getConfiguration("scope-focus");
-  const activeScope = config.get<string | null>("activeScope", null);
   const scopes = config.get<Scopes>("scopes")!;
 
   if (activeScope === null) {
     status.text = `$(list-tree) No Scope`;
     status.backgroundColor = undefined;
-    unsetFileScope();
+    if (!init) {
+      unsetFileScope();
+      unsetGitScope();
+    }
   } else if (!(activeScope in scopes)) {
     status.text = `$(list-tree) Unknown`;
     status.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
     vscode.window.showErrorMessage(`Unknown scope: ${activeScope}`);
     unsetFileScope();
+    unsetGitScope();
   } else {
     status.text = `$(list-tree) ${activeScope}`;
     status.backgroundColor = undefined;
     setFileScope(scopes[activeScope]);
+    setGitScope(scopes[activeScope]);
   }
 
   if (Object.keys(scopes).length === 0) {
@@ -47,7 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
         placeHolder: "Select a scope to switch to",
       });
       if (selected) {
-        config.update("activeScope", selected === "No Scope" ? null : selected);
+        activeScope = selected === "No Scope" ? null : selected;
+        updateScope(status);
       }
     })
   );
@@ -62,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // Initialize.
-  updateScope(status);
+  updateScope(status, true);
 }
 
 export function deactivate() {}
