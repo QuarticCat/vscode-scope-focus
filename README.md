@@ -24,6 +24,10 @@ Taking [llvm-project](https://github.com/llvm/llvm-project) as an example. If yo
 {
     "scope-focus.activeScope": "LLVM/Clang",
     "scope-focus.scopes": {
+        "*": {                             // optional, will be applied to all scopes
+            "include": ["README.md"],      // will be included in all scopes
+            "exclude": ["**/test"]         // will be excluded from all scopes
+        },
         "LLVM/Clang": {
             "include": ["clang", "llvm"],  // accept globs
             "exclude": ["*/cmake"]         // accept globs
