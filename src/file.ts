@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { glob } from "glob";
 import * as path from "path";
 import * as fs from "fs";
-import { Scope } from "./config";
 
 export function unsetFileScope() {
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
@@ -12,7 +11,7 @@ export function unsetFileScope() {
   }
 }
 
-export async function setFileScope({ include, exclude }: Scope) {
+export async function setFileScope(include: string[], exclude: string[]) {
   // Convert to exclude paths.
   const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const includePaths = await glob(include, { cwd });

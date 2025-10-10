@@ -38,6 +38,29 @@
           "default": null,
           "markdownDescription": "Scope currently in use. Set to `null` to turn off."
         },
+        "scope-focus.base": {
+          "type": "object",
+          "default": {},
+          "description": "Base scope definition. Shared by all scopes.",
+          "properties": {
+            "include": {
+              "type": "array",
+              "default": [],
+              "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to include. Prepended to all scopes.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exclude": {
+              "type": "array",
+              "default": [],
+              "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to exclude. Prepended to all scopes.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "scope-focus.scopes": {
           "type": "object",
           "default": {},
@@ -48,6 +71,7 @@
             "properties": {
               "include": {
                 "type": "array",
+                "default": [],
                 "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to include.",
                 "items": {
                   "type": "string"
@@ -55,6 +79,7 @@
               },
               "exclude": {
                 "type": "array",
+                "default": [],
                 "markdownDescription": "[Glob patterns](https://aka.ms/vscode-glob-patterns) to exclude.",
                 "items": {
                   "type": "string"

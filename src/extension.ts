@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
-import { ScopesConfig } from "./config";
+import { Scope, Scopes } from "./config";
 import { unsetFileScope, setFileScope } from "./file";
 
 async function updateScope(status: vscode.StatusBarItem) {
   const config = vscode.workspace.getConfiguration("scope-focus");
   const activeScope = config.get<string | null>("activeScope", null);
-  const scopes = config.get<ScopesConfig>("scopes")!;
+  const base = config.get<Scope>("base", {});
+  const scopes = config.get<Scopes>("scopes", {});
 
   if (activeScope === null) {
     status.text = `$(list-tree) No Scope`;
@@ -19,11 +20,10 @@ async function updateScope(status: vscode.StatusBarItem) {
   } else {
     status.text = `$(list-tree) ${activeScope}`;
     status.backgroundColor = undefined;
-    const sharedScope = scopes["*"];
-    setFileScope({
-      include: [...(sharedScope?.include ?? []), ...(scopes[activeScope].include ?? [])],
-      exclude: [...(sharedScope?.exclude ?? []), ...(scopes[activeScope].exclude ?? [])],
-    });
+    setFileScope(
+      [...(base?.include ?? []), ...(scopes[activeScope].include ?? [])],
+      [...(base?.exclude ?? []), ...(scopes[activeScope].exclude ?? [])]
+    );
   }
 
   if (Object.keys(scopes).length === 0) {
@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("scope-focus.switchScope", async () => {
       const config = vscode.workspace.getConfiguration("scope-focus");
-      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes")!).filter((key) => key !== "*")];
+      const scopes = ["No Scope", ...Object.keys(config.get<object>("scopes")!)];
       const selected = await vscode.window.showQuickPick(scopes, {
         title: "Switch Scope",
         placeHolder: "Select a scope to switch to",

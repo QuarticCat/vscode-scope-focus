@@ -13,7 +13,8 @@ You can consider it as a workaround of [vscode#869](https://github.com/microsoft
 
 ### Workspace Settings
 
-- `scope-focus.activeScope`: Switch active scope. You can operate this on **status bar** as well.
+- `scope-focus.activeScope`: Switch active scope. You can operate this on **status bar** at the bottom.
+- `scope-focus.base`: Define base config shared by all scopes.
 - `scope-focus.scopes`: Define scopes. Hover on settings to see details.
 
 ### Examples
@@ -24,14 +25,21 @@ Taking [llvm-project](https://github.com/llvm/llvm-project) as an example. If yo
 {
     "scope-focus.activeScope": "LLVM/Clang",
     "scope-focus.scopes": {
-        "*": {                             // optional, will be applied to all scopes
-            "include": ["README.md"],      // will be included in all scopes
-            "exclude": ["**/test"]         // will be excluded from all scopes
-        },
         "LLVM/Clang": {
-            "include": ["clang", "llvm"],  // accept globs
-            "exclude": ["*/cmake"]         // accept globs
+            "include": ["clang", "llvm"],
+            "exclude": ["*/cmake"]
         }
+    }
+}
+```
+
+If you want to include / exclude some paths in all scopes, you can configure the base scope:
+
+```json
+{
+    "scope-focus.base": {
+        "include": ["README.md"],
+        "exclude": ["*/CMakeLists.txt"]
     }
 }
 ```
