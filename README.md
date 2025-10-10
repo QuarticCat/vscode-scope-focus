@@ -49,6 +49,10 @@ If you want to include / exclude some paths in all scopes, you can configure the
 - This extension works by changing the workspace-level `files.exclude` setting. Yours will be overwritten.
 - Currently it doesn't support [multi-root workspaces](https://code.visualstudio.com/docs/editor/multi-root-workspaces). File an issue if you need this feature.
 
+## Performance Tips
+
+Under the hood, this extension walks through the project directory according to your glob patterns. That could cause performance issue for the `**` pattern. For example, pattern `clang` is effectively the same as `clang/**`, but the former is much faster since we don't walk deeper. Try to avoid `**` as much as possible, especially on large repositories.
+
 ## Alternatives
 
 - [Project Scopes](https://marketplace.visualstudio.com/items?itemName=cfcluan.project-scopes)
