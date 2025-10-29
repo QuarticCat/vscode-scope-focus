@@ -60,6 +60,10 @@ Under the hood, this extension walks through the project directory according to 
 
 ## Release Notes
 
+### 0.1.3
+
+Relax the requirement of VSCode version.
+
 ### 0.1.2
 
 Add `scope-focus.base` config.

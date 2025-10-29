@@ -2,7 +2,7 @@
   "name": "scope-focus",
   "displayName": "Scope Focus",
   "description": "Focus on a subset of files",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "QuarticCat",
   "license": "MIT",
   "repository": {
