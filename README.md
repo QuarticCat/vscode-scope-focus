@@ -4,6 +4,9 @@ When working on a large repo, it's often desired to focus on a subset of files. 
 
 You can consider it as a workaround of [vscode#869](https://github.com/microsoft/vscode/issues/869).
 
+> [!IMPORTANT]
+> Since the original issue has been resolved, this repository will be archived.
+
 ## Features
 
 - Create scopes.
